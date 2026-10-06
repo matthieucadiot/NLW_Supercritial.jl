@@ -48,7 +48,7 @@ Given this approximate solution, the code computes rigorously the bounds $Y$, $Z
 
  - the bound $Y$ is computed following Section 5.2 (Lemma 5.1). The nonlinear terms $5W^4$ and $W^5$, as well as the residual, are computed with BigFloat precision.
  - the constants $\kappa$, $\kappa'$ and $\kappa''$, controlling the norm of $\Lambda^{-1}\pi^{>N}$, $\partial_\omega\Lambda \Lambda^{-1}\pi^{>N}$ and $\mathcal{N}^2\Lambda^{-1}\pi^{>N}$, are computed following Section 5.3.1 (Lemmas 5.3 to 5.7 and Lemma 5.9). In particular, the assumptions (5.12) and (5.13) are verified.
- - the finite dimensional part of $DF(\omega,W)$ and its approximate inverse $B_N$ are constructed following Section 4.4.
+ - the finite dimensional part of $DF(\omega,W)$ and its approximate inverse $B_N$ are constructed following Section 4.4. Note that the product $DF(\omega,W) B_N$ is achieved column by column without constructing $DF(\omega,W)$, but rather using its action. This helps reduce the memory cost of the code.
  - the bound $Z_1 = \max\{Z_{1,0} + Z_{1,1}, Z_{1,2}\}$ is computed following Section 5.3 (Lemma 5.2).
  - the bound $Z_2$ is computed following Section 5.4 (Lemma 5.8).
 
@@ -67,7 +67,7 @@ for all $\theta$, which provides the blow-up rate stated in Remark 1.2 in [[1]](
 
  The interested user needs to download all files in the same folder. The code main_proof.jl can then be run directly : it activates the environment given by Project.toml and Manifest.toml, and installs the required packages if needed. 
  
- The values of the parameters used for the proof are given at the beginning of the section "Computer-assisted proof of the profile" of the code. In particular, $N_1 = 65$ and $N_2 = 200$ are the numbers of Fourier and Chebyshev modes of the finite dimensional part, $K_1 = 99$ and $K_2 = 1500$ are the sizes used for the control of $\Lambda^{-1}$, and $\nu = 1.3$, $\nu_\theta = 1.01$ are the weights of the norm. With these values, the proof requires a large amount of memory, since the approximate inverse $B_N$ is a full matrix of size $13267$. A second set of values is given in comment for a quick test of the code. Note that the proof is not conclusive with these values.
+ The values of the parameters used for the proof are given at the beginning of the section "Computer-assisted proof of the profile" of the code. In particular, $N_1 = 65$ and $N_2 = 200$ are the numbers of Fourier and Chebyshev modes of the finite dimensional part, $K_1 = 99$ and $K_2 = 1500$ are the sizes used for the control of $\Lambda^{-1}$, and $\nu = 1.3$, $\nu_\theta = 1.01$ are the weights of the norm. With these values, the proof requires around 7GB at peak memory and can therefore be run on a laptop. A second set of values is given in comment for a quick test of the code. Note that the proof is not conclusive with these values.
 
  The code is build using the following packages :
  - [RadiiPolynomial](https://github.com/OlivierHnt/RadiiPolynomial.jl) (version 0.9.11)
