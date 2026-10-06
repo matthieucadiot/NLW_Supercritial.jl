@@ -1,4 +1,4 @@
-# Computer-assisted proof of a discretely self-similar blow-up profile in the defocusing energy-supercritical quintic wave equation.
+# Computer-assisted proof of a real-valued discretely self-similar blow-up profile in the defocusing energy-supercritical quintic wave equation.
 
 
 
