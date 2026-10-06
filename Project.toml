@@ -1,0 +1,12 @@
+[deps]
+IntervalArithmetic = "d1acc4aa-44c8-5952-acd4-ba5d80a2a253"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+RadiiPolynomial = "f2081a94-c849-46b6-8dc9-07bb90ed72a9"
+
+[compat]
+JLD2 = "0.6"
+IntervalArithmetic = "=1.0.10"
+RadiiPolynomial = "=0.9.11"
+julia = "1.10"
