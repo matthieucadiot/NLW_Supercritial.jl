@@ -1,101 +1,133 @@
-# Computer-assisted proof of a real-valued discretely self-similar blow-up profile in the defocusing energy-supercritical quintic wave equation.
+# Computer-assisted proofs of discretely self-similar blow-up for the defocusing NLW
 
+This repository contains the Julia codes and approximate profiles for the computer-assisted proofs in
 
+**Finite-time blow-up for the real-valued defocusing energy-supercritical NLW**,  
+M. Cadiot, A. D. Ionescu and S. Palasek.  
+[Preprint](https://arxiv.org/abs/2610.06678)
 
-Table of contents:
+The packages cover the three cases
 
+$$
+(d,p)=(9,3),\qquad (7,5),\qquad (6,7)
+$$
 
-* [Introduction](#introduction)
-* [The defocusing quintic wave equation](#the-defocusing-quintic-wave-equation)
-   * [Proof of existence of a discretely self-similar profile](#proof-of-existence-of-a-discretely-self-similar-profile)
-   * [A posteriori bounds on the profile](#a-posteriori-bounds-on-the-profile)
-* [Utilisation and References](#utilisation-and-references)
-* [License and Citation](#license-and-citation)
-* [Contact](#contact)
+of the real-valued defocusing wave equation
 
+$$
+\partial_t^2u-\Delta u+u^p=0.
+$$
 
+The profile is periodic in similarity time and real-analytic across the light cone. It gives a solution
 
-# Introduction
+$$
+u(t,x)=(T-t)^{-\alpha}W^*\left(\omega^*\log\frac1{T-t},\frac{|x|}{T-t}\right),
+\qquad \alpha=\frac2{p-1}.
+$$
 
-This Julia code is a complement to the article 
+The analytic reduction from a validated profile to blow-up of smooth, compactly supported radial data is Proposition 2.4 of the paper. The numerical profile validation is Theorem 5.11. References below follow the manuscript accompanying these three proof packages.
 
-#### [[1]](https://arxiv.org/abs/2610.06678) : "Finite-time blow-up for the real-valued defocusing energy-supercritical quintic NLW", M. Cadiot, A. D. Ionescu and S. Palasek, [ArXiv Link](https://arxiv.org/abs/2610.06678)
+## Proof packages
 
-as it provides the necessary rigorous computations of the bounds presented along the paper. The computations are performed using the package [IntervalArithmetic](https://github.com/JuliaIntervals/IntervalArithmetic.jl). The mathematical objects (spaces, sequences, operators,...) are built using the package [RadiiPolynomial](https://github.com/OlivierHnt/RadiiPolynomial.jl). 
+Download the archive for the desired case. Each package is self-contained.
 
+| $(d,p)$ | Archive | Approximation $N_W$ | Finite inverse $N$ | Tail cutoff $K$ |
+|---|---|---|---|---|
+| $(9,3)$ | [NLW_proof_d9_p3.zip](NLW_proof_d9_p3.zip) | $(103,1290)$ | $(65,1400)$ | $(165,10500)$ |
+| $(7,5)$ | [NLW_proof_d7_p5.zip](NLW_proof_d7_p5.zip) | $(101,600)$ | $(65,900)$ | $(203,7000)$ |
+| $(6,7)$ | [NLW_proof_d6_p7.zip](NLW_proof_d6_p7.zip) | $(145,600)$ | $(95,1000)$ | $(205,8000)$ |
 
-# The defocusing quintic wave equation
+Each extracted folder contains four files:
 
-The defocusing quintic wave equation
-$$\partial_t^2 u - \Delta u + u^5 = 0$$
-for real-valued functions on $\mathbb{R}^{1+10}$ is energy-supercritical. In [[1]](https://arxiv.org/abs/2610.06678), we construct a discretely self-similar solution in a backward light cone, of the form
-$$u(t,x) = (T-t)^{-1/2}\, W\left(\omega \log\frac{1}{T-t}, \frac{|x|}{T-t}\right),$$
-where the profile $W = W(\theta,\rho)$ is $2\pi$-periodic in its first variable. In particular, cutting off the initial data provides smooth, compactly supported, radial data whose solution blows up in finite time (see Theorem 1.1 in [[1]](https://arxiv.org/abs/2610.06678)). The frequency $\omega$ of the profile is an unknown of the problem, and the couple $(\omega,W)$ solves
-$$\Lambda(\omega)W + W^5 = 0,$$
-where, using the variable $x = 2\rho^2-1 \in [-1,1]$,
-$$\Lambda(\omega) = \omega^2\partial_\theta^2 + 2\omega\partial_\theta + \frac{3}{4} - 4(1-x^2)\partial_x^2 - (32-8x)\partial_x + 4\omega(1+x)\partial_\theta\partial_x.$$
-We refer to Section 2 and Section 4 in [[1]](https://arxiv.org/abs/2610.06678) for the derivation of this equation and for a complete description of the problem. The profile $W$ is represented by a Fourier series in $\theta$ and by a Chebyshev series in $x$. In particular, $W$ satisfies $W(\theta+\pi,\rho) = -W(\theta,\rho)$, meaning that only the odd Fourier modes are used.
+- `main_proof.jl`: the complete computer-assisted proof for that case.
+- `approximate_solution_d9_p3.jld2`, `approximate_solution_d7_p5.jld2`, or `approximate_solution_d6_p7.jld2`: the corresponding approximate profile and frequency, together with `d` and `p`.
+- `Project.toml`: the Julia environment.
+- `Manifest.toml`: the pinned dependency versions.
 
-## Proof of existence of a discretely self-similar profile
+The saved profile uses Fourier modes in $\theta$ and Chebyshev polynomials in $x=2\rho^2-1$. Only odd Fourier modes occur, so $W(\theta+\pi,\rho)=-W(\theta,\rho)$. The profile and frequency are stored as BigFloat intervals. The nonlinear products and residual are evaluated with 192-bit arithmetic.
 
-The code main_proof.jl provides the computer-assisted component for the constructive proof of existence of a discretely self-similar profile, using the analysis of [[1]](https://arxiv.org/abs/2610.06678). Specifically, we look for a zero of
-$$F(\omega,W) = \left(\ell(W),~ \Lambda(\omega)W + W^5\right),$$
-where $\ell$ is a phase condition removing the invariance by translation in $\theta$. 
+## Running a proof
 
-We provide a candidate solution for the proof, which is given in the file approximate_solution.jld2. It contains the approximate frequency $\omega$ and the Fourier-Chebyshev coefficients of the approximate profile $W$, both stored in interval arithmetic with BigFloat (256 bits) precision. These correspond to the approximate solution $\bar{U} = (\bar{\omega},\bar{W})$ in Section 5.5. In particular, $\bar{W}$ is real and possesses the Fourier modes $|n_1| \leq 65$ and the Chebyshev modes $n_2 \leq 300$. The approximate profile was obtained by numerical continuation from rotating self-similar profiles of the complex-valued equation (see Section 3). This step is not rigorous and is not part of the present code.
+Use Julia 1.12; the supplied manifests were generated with Julia 1.12.4. Run one of the following commands from the directory containing the downloaded archive:
 
-Given this approximate solution, the code computes rigorously the bounds $Y$, $Z_1$ and $Z_2$ of the Newton-Kantorovich approach. The code follows the structure and the notations of Section 5 in [[1]](https://arxiv.org/abs/2610.06678) :
-
- - the bound $Y$ is computed following Section 5.2 (Lemma 5.1). The nonlinear terms $5W^4$ and $W^5$, as well as the residual, are computed with BigFloat precision.
- - the constants $\kappa$, $\kappa'$ and $\kappa''$, controlling the norm of $\Lambda^{-1}\pi^{>N}$, $\partial_\omega\Lambda \Lambda^{-1}\pi^{>N}$ and $\mathcal{N}^2\Lambda^{-1}\pi^{>N}$, are computed following Section 5.3.1 (Lemmas 5.3 to 5.7 and Lemma 5.9). In particular, the assumptions (5.12) and (5.13) are verified.
- - the finite dimensional part of $DF(\omega,W)$ and its approximate inverse $B_N$ are constructed following Section 4.4. Note that the product $DF(\omega,W) B_N$ is achieved column by column without constructing $DF(\omega,W)$, but rather using its action. This helps reduce the memory cost of the code.
- - the bound $Z_1 = \max\{Z_{1,0} + Z_{1,1}, Z_{1,2}\}$ is computed following Section 5.3 (Lemma 5.2).
- - the bound $Z_2$ is computed following Section 5.4 (Lemma 5.8).
-
-Finally, the code verifies the conditions (4.15) and validates (or not) the computer-assisted proof (cf. Theorem 5.11). If the computer-assisted proof succeeds, the values of $Y$, $Z_1$, $Z_2$ and of the radius $r_0$ are displayed. In particular, we obtain that there exists a zero $(\omega^\ast,W^\ast)$ of $F$ in a neighborhood of the approximate solution, and the code displays explicit bounds for $|\omega^\ast - \omega|$ and $\|W^\ast - W\|$, making the proof constructive. With the values of the parameters given in the code, we obtain $r_0 = 7.216 \cdot 10^{-11}$, $|\omega^\ast - \omega| \leq 4.05 \cdot 10^{-10}$ and $\|W^\ast - W\| \leq 8.42 \cdot 10^{-10}$.
-
-## A posteriori bounds on the profile
-
-If the proof of the profile is achieved, the code computes a posteriori bounds on $W^\ast$, following Remark 5.12 in [[1]](https://arxiv.org/abs/2610.06678). More precisely, we obtain a rigorous upper bound for $|W^\ast(\theta,\rho)|$, valid for all $\theta$ and all $\rho \in [0,1]$, and a rigorous lower bound for 
-$$\max\left(|W^\ast(\theta,0)|, |W^\ast(\theta,1)|\right)$$ 
-which is valid for all $\theta$. The lower bound is obtained by evaluating $W$ on a uniform grid of 2001 points of $[0,\pi]$ and using a Lipschitz constant in $\theta$. In particular, we validate that
-$$2.26 \leq \max_{0 \leq \rho \leq 1} |W^\ast(\theta,\rho)| \leq 8.25$$
-for all $\theta$, which provides the blow-up rate stated in Remark 1.2 in [[1]](https://arxiv.org/abs/2610.06678).
-
-
- # Utilisation and References
-
- The interested user needs to download all files in the same folder. The code main_proof.jl can then be run directly : it activates the environment given by Project.toml and Manifest.toml, and installs the required packages if needed. 
- 
- The values of the parameters used for the proof are given at the beginning of the section "Computer-assisted proof of the profile" of the code. In particular, $N_1 = 65$ and $N_2 = 200$ are the numbers of Fourier and Chebyshev modes of the finite dimensional part, $K_1 = 99$ and $K_2 = 1500$ are the sizes used for the control of $\Lambda^{-1}$, and $\nu = 1.3$, $\nu_\theta = 1.01$ are the weights of the norm. With these values, the proof requires around 7GB at peak memory and can therefore be run on a laptop. A second set of values is given in comment for a quick test of the code. Note that the proof is not conclusive with these values.
-
- The code is build using the following packages :
- - [RadiiPolynomial](https://github.com/OlivierHnt/RadiiPolynomial.jl) (version 0.9.11)
- - [IntervalArithmetic](https://github.com/JuliaIntervals/IntervalArithmetic.jl) (version 1.0.10)
- - [LinearAlgebra](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/)
- - [JLD2](https://github.com/JuliaIO/JLD2.jl)
- 
- The code has been written for Julia 1.10.
- 
- 
- # License and Citation
- 
-  This code is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-  
-If you wish to use this code in your publication, research, teaching, or other activities, please cite it using the following BibTeX template:
-
+```bash
+unzip NLW_proof_d9_p3.zip && julia --threads=32 --project=NLW_proof_d9_p3 NLW_proof_d9_p3/main_proof.jl
 ```
-@software{NLW_Supercritial.jl,
-  author = {Matthieu Cadiot and Alexandru D. Ionescu and Stan Palasek},
+
+```bash
+unzip NLW_proof_d7_p5.zip && julia --threads=32 --project=NLW_proof_d7_p5 NLW_proof_d7_p5/main_proof.jl
+```
+
+```bash
+unzip NLW_proof_d6_p7.zip && julia --threads=32 --project=NLW_proof_d6_p7 NLW_proof_d6_p7/main_proof.jl
+```
+
+The script activates its own environment and installs the pinned dependencies on the first run. Subsequent runs need only the `julia` command. Set `--threads` to the number of CPU cores available to the computation.
+
+These are full proofs at the parameters of Tables 2–3 and require a high-memory machine or cluster allocation. The floating-point inverse alone occupies approximately the memory listed below; peak memory is higher because the interval computations also require working arrays.
+
+| $(d,p)$ | Finite matrix dimension | Dense inverse alone | Reported time on 32 cores |
+|---|---:|---:|---:|
+| $(9,3)$ | 92,467 | 68.4 GB | 9.4 hours |
+| $(7,5)$ | 59,467 | 28.3 GB | 4.2 hours |
+| $(6,7)$ | 96,097 | 73.9 GB | 14.5 hours |
+
+The timings are those reported in Remark 5.12 of the paper; they depend on the hardware and software environment.
+
+## What the code verifies
+
+The unknown is $U=(\omega,W)$, and the profile equation, with its phase condition, is
+
+$$
+F(U)=\bigl(\ell(W),\Lambda(\omega)W+W^p\bigr)=0.
+$$
+
+Starting from the saved approximation $\bar U$, the code follows Sections 4–5 of the paper:
+
+1. Compute the full residual bound $Y\geq\|F(\bar U)\|$, including every generated nonlinear mode: Lemma 5.1.
+2. Validate the finite inverse columns and the infinite-tail bounds $\kappa,\kappa',\kappa''$: Section 5.3.1 and Lemmas 5.7 and 5.9. This includes hypotheses (5.11)–(5.12).
+3. Construct the finite approximate inverse and enclose the defect $I-DF(\bar U)A$, yielding $Z_1$: Section 4.4 and Lemma 5.2.
+4. Bound the nonlinear variation by $Z_2(r)$: Lemma 5.8.
+5. Verify the radii-polynomial conditions (4.15) and apply Theorem 4.5.
+
+The correction is written as $U^*=\bar U+A\Psi$. The validated radius bounds $\|\Psi\|$; the frequency and profile errors are obtained by multiplying it by $\|\pi_\omega A\|$ and $\|\pi_W A\|$.
+
+A successful run prints `EXISTENCE PROVEN`, the bounds $Y,Z_1,Z_2$, a validated radius, and explicit frequency and profile error bounds. Failed validation conditions raise an error.
+
+For comparison, Table 2 of the paper gives the following error bounds:
+
+| $(d,p)$ | $\lvert\omega^*-\bar\omega\rvert$ | $\lVert W^*-\bar W\rVert_{\ell^1}$ |
+|---|---:|---:|
+| $(9,3)$ | $1.39\times10^{-16}$ | $2.30\times10^{-14}$ |
+| $(7,5)$ | $4.93\times10^{-13}$ | $3.71\times10^{-12}$ |
+| $(6,7)$ | $3.12\times10^{-11}$ | $1.25\times10^{-10}$ |
+
+Finally, the code verifies the uniform profile-size bounds of Remark 5.13. It evaluates the traces at $\rho=0,1$ on 2001 time points and uses a Lipschitz bound to cover all $\theta$. Together with the validated profile error, this supplies the upper and positive lower bounds used for the self-similar blow-up rate.
+
+## Dependencies
+
+The pinned environment includes:
+
+- [RadiiPolynomial.jl](https://github.com/OlivierHnt/RadiiPolynomial.jl) 0.9.11, for sequence spaces, operators and interval FFTs.
+- [IntervalArithmetic.jl](https://github.com/JuliaIntervals/IntervalArithmetic.jl) 1.0.10, for rigorous enclosures.
+- [JLD2.jl](https://github.com/JuliaIO/JLD2.jl) 0.6.7, for loading the approximate profiles.
+- Julia's `LinearAlgebra` standard library.
+
+## License and citation
+
+This code is distributed under the [MIT License](LICENSE).
+
+Please cite the paper above and this repository when using the proofs or data:
+
+```bibtex
+@software{CadiotIonescuPalasek2026NLW,
+  author = {Cadiot, Matthieu and Ionescu, Alexandru D. and Palasek, Stan},
   title  = {NLW_Supercritial.jl},
-  url    = {https://github.com/matthieucadiot/NLW_Supercritial.jl},
-  note = {\url{ https://github.com/matthieucadiot/NLW_Supercritial.jl},
-  year   = {2026}
+  year   = {2026},
+  url    = {https://github.com/matthieucadiot/NLW_Supercritial.jl}
 }
 ```
 
-# Contact
+## Contact
 
-You can contact me at :
-
-matthieu.cadiot@polytechnique.edu
+[matthieu.cadiot@polytechnique.edu](mailto:matthieu.cadiot@polytechnique.edu)
